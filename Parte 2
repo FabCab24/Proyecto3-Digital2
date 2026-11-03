@@ -1,0 +1,20 @@
+//	  uint8_t mensaje[4];
+//
+//	    HAL_StatusTypeDef estado;
+//
+//	    estado = HAL_UART_Receive(&huart1, mensaje,4, HAL_MAX_DELAY);
+//
+//	    if (estado == HAL_OK)
+//	    {
+//	        if (memcmp(mensaje, "HOLA", 4) == 0)
+//	        {
+//	        	char texto[] = "Mensaje recibido: HOLA\r\n";
+//
+//	        	            HAL_UART_Transmit(&huart2,(uint8_t *)texto,strlen(texto),100);
+//	            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+//
+//	            HAL_Delay(500);
+//
+//	            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+//	        }
+//	    }
