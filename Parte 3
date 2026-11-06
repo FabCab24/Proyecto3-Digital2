@@ -1,0 +1,130 @@
+// Proyecto 3 Electronica Digital 2
+// Parte 3: control mediante Bluetooth 
+
+#include <Arduino.h>
+
+#define CUSTOM_SETTINGS
+#define INCLUDE_TERMINAL_MODULE
+#include <DabbleESP32.h>
+
+#define RX_NUCLEO 16
+#define TX_NUCLEO 17
+
+String respuestaNucleo = "";
+
+void setup()
+{
+    // Monitor serial de la computadora
+    Serial.begin(115200);
+
+    // UART hacia Nucleo 1
+    Serial2.begin(115200, SERIAL_8N1, RX_NUCLEO, TX_NUCLEO);
+
+    // Iniciar conexión con Dabble
+    Dabble.begin("FICESP32");
+
+    respuestaNucleo.reserve(128);
+
+    Serial.println("ESP32 lista.");
+    Serial.println("Conecta Dabble a FICESP32 y abre Terminal.");
+}
+
+void loop()
+{
+    // Atender la comunicación con Dabble
+    Dabble.processInput();
+
+    // Dabble → Nucleo 1
+    if (Terminal.available() > 0)
+    {
+        char ultimoCaracter = '\0';
+
+        while (Terminal.available() > 0)
+        {
+            char caracter = (char)Terminal.read();
+
+            Serial2.write((uint8_t)caracter);
+            Serial.write((uint8_t)caracter);
+
+            ultimoCaracter = caracter;
+        }
+
+        // Marcar el final del comando enviado desde Dabble
+        if (ultimoCaracter != '\n')
+        {
+            Serial2.write('\n');
+            Serial.println();
+        }
+    }
+
+    // Monitor serial de computadora → Nucleo 1.
+    // Se conserva para realizar pruebas por USB.
+    while (Serial.available() > 0)
+    {
+        Serial2.write(Serial.read());
+    }
+
+    // Nucleo 1 → computadora y Dabble
+    while (Serial2.available() > 0)
+    {
+        char caracter = (char)Serial2.read();
+
+        Serial.write((uint8_t)caracter);
+        respuestaNucleo += caracter;
+
+        // Enviar la respuesta al completar una línea.
+        // El límite evita acumular texto indefinidamente.
+        if (caracter == '\n' ||
+            respuestaNucleo.length() >= 120)
+        {
+            Terminal.print(respuestaNucleo);
+            respuestaNucleo = "";
+        }
+    }
+}
+
+/* Ejemplo 02.Terminal con libreria DabbleESP32
+
+   Terminal Module is like a chat box. It allows you to send and receive commands between your
+   board and smartphone.
+
+   You can reduce the size of library compiled by enabling only those modules that you
+   want to use. For this first define CUSTOM_SETTINGS followed by defining
+   INCLUDE_modulename.
+
+   Explore more on: https://thestempedia.com/docs/dabble/terminal-module/
+
+#define CUSTOM_SETTINGS
+#define INCLUDE_TERMINAL_MODULE
+#include <DabbleESP32.h>
+String Serialdata = "";
+bool dataflag = 0;
+void setup() {
+  Serial.begin(115200);       // make sure your Serial Monitor is also set at this baud rate.
+  Dabble.begin("MyEsp32");    //set bluetooth name of your device
+}
+
+void loop() {
+
+  Dabble.processInput();             //this function is used to refresh data obtained from smartphone.Hence calling this function is mandatory in order to get data properly from your mobile.
+  while (Serial.available() != 0)
+  {
+    Serialdata = String(Serialdata + char(Serial.read()));
+    dataflag = 1;
+  }
+  if (dataflag == 1)
+  {
+    Terminal.print(Serialdata);
+    Serialdata = "";
+    dataflag = 0;
+  }
+  if (Terminal.available() != 0)
+  {
+    while (Terminal.available() != 0)
+    {
+      Serial.write(Terminal.read());
+    }
+    Serial.println();
+  }
+}
+*/
