@@ -71,24 +71,43 @@ typedef struct {
     uint16_t duracion;
 } Nota;
 
-static const Nota StartMedicion[] = {
-	{900, 70},
-	{0, 180},
-	{900, 70}
+// frecuencias y duraciones de efectos de sonido
+static const uint16_t StartMedicion[] = {
+		  262, 0,
+		  294, 0,
+		  262, 0,
+	      311, 0,
+	      392, 0,
+	      466, 0,
+	      440
 };
-
-static const Nota SaveMedicion[] = {
-	{1500, 80},
-	{2000, 120}
+static const uint16_t StartMedicionDuraciones[] = {
+		    360, 40,
+		    200, 50,
+		    360, 40,
+		    180, 30,
+		    170, 20,
+		    170, 30,
+		    560
 };
-
-static const Nota AlertaLimite[] = {
-	{1200, 100},
-	{0, 100},
-	{1200, 100},
-	{0, 100},
-	{1200, 250}
+static const uint16_t SaveMedicion[] = {
+		  659, 0,
+		  554, 0,
+		  554, 0,
+		  494, 0,
+		  554, 0,
+		  659
 };
+static const uint16_t SaveMedicionDuraciones[] = {
+		  100, 20,
+		   90, 40,
+		  380, 10,
+	       90, 10,
+	      120, 10,
+	      180
+};
+static const uint16_t AlertaLimite[] = {1200, 0, 1200, 0, 1200};
+static const uint16_t AlertaLimiteDuraciones[] = {100, 100, 100, 100, 250};
 
 static const Nota *secuencia = 0;
 static uint8_t cantidadNotas = 0;
